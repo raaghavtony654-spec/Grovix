@@ -72,10 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxScroll = document.body.scrollHeight - window.innerHeight;
         const progress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
 
-        // Phase 1: 0.0 -> 0.3 (Move fingers closer by a tiny amount to perfectly touch)
+        // Phase 1: 0.0 -> 0.3 (Move fingers from a gap to perfectly touch)
         let closeProgress = Math.min(progress / 0.3, 1);
-        let additionalRoboticX = closeProgress * 0.8; // move right by 0.8vw
-        let additionalHumanX = closeProgress * -0.8; // move left by 0.8vw
+        let additionalRoboticX = -2.5 + (closeProgress * 3.3); // start with a left gap, move right by 3.3vw (ends at 0.8)
+        let additionalHumanX = 2.5 + (closeProgress * -3.3); // start with a right gap, move left by -3.3vw (ends at -0.8)
 
         // Phase 2 & 3: 0.3 -> 0.8 (Charge and Expand circle)
         let circleProgress = 0;
