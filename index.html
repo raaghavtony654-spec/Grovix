@@ -4,65 +4,507 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grovix - Bold Ideas That Start With Vision</title>
+    <meta name="description" content="A dedicated team of specialists, delivering remarkable work to our clients worldwide! 5+ years | 511+ Brands | 60+ Crore Ad spent">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="scroll-wrapper">
+    <header class="navbar" id="main-navbar">
+        <div class="logo">GROVIX</div>
+        <nav class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#clients">Clients</a>
+            <a href="#why-us">Why Grovix?</a>
+            <a href="#reviews">Reviews</a>
+            <a href="#faq">FAQs</a>
+        </nav>
+        <div class="auth-buttons">
+            <a href="#" class="login-btn">Login</a>
+            <a href="#contact" class="try-now-btn">Chat Now</a>
+        </div>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+
+    <!-- ====== HERO VIEWPORT (Fixed, scroll-driven) ====== -->
+    <div class="scroll-wrapper" id="hero-viewport">
         <div class="reactive-bg"></div>
         <div class="reactive-bg-white"></div>
         <div class="noise-overlay"></div>
     
-    <header class="navbar">
-        <div class="logo">GROVIX</div>
-        <nav class="nav-links">
-            <a href="#">Insights</a>
-            <a href="#">Solutions</a>
-            <a href="#">Pricing</a>
-        </nav>
-        <div class="auth-buttons">
-            <a href="#" class="login-btn">Login</a>
-            <a href="#" class="try-now-btn">Try Now</a>
-        </div>
-    </header>
 
-    <main class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">
-                <span class="line"><span class="word">Bold</span> <span class="word">Ideas</span> <span class="word">That</span></span><br>
-                <span class="line"><span class="word">Start</span> <span class="word">With</span> <span class="word">Vision.</span></span>
-            </h1>
-            <p class="hero-subtitle">
-                We help modern brands craft digital stories that<br>
-                inspire action and drive results.
-            </p>
-            <a href="#" class="get-in-touch-btn">Get In Touch <span class="arrow">↗</span></a>
-        </div>
-        
-        <div class="hands-container">
-            <img src="images/robotic_hand.png?v=2" alt="Robotic Hand" class="hand robotic-hand" id="robotic-hand">
-            <div class="big-bang-circle" id="big-bang-circle"></div>
-            <div class="spark"></div>
-            <img src="images/human_hand.png?v=2" alt="Human Hand" class="hand human-hand" id="human-hand">
-        </div>
-    </main>
+        <main class="hero-section">
+            <div class="hero-content">
 
-    <footer class="trusted-section">
-        <p class="trusted-text">Trusted by teams of every scale</p>
-        <div class="logos-container">
-            <div class="logo-item">MERCURY</div>
-            <div class="logo-item">ramp ↗</div>
-            <div class="logo-item">HEX</div>
-            <div class="logo-item">▲ Vercel</div>
-            <div class="logo-item">descript</div>
-            <div class="logo-item">Cash App</div>
-            <div class="logo-item">SUPERCELL</div>
-            <div class="logo-item">runway</div>
-        </div>
-    </footer>
+                <h1 class="hero-title">
+                    <span class="line"><span class="word">Bold</span> <span class="word">Ideas</span> <span class="word">That</span></span><br>
+                    <span class="line"><span class="word">Start</span> <span class="word">With</span> <span class="word">Vision.</span></span>
+                </h1>
+                <p class="hero-subtitle">
+                    A dedicated team of specialists, delivering remarkable<br>
+                    work to our clients worldwide!
+                </p>
+                <a href="#contact" class="get-in-touch-btn">Book a Strategy Call <span class="arrow">↗</span></a>
+            </div>
+            
+            <div class="hands-container">
+                <img src="images/robotic_hand.png?v=2" alt="Robotic Hand" class="hand robotic-hand" id="robotic-hand">
+                <div class="big-bang-circle" id="big-bang-circle"></div>
+                <div class="spark"></div>
+                <img src="images/human_hand.png?v=2" alt="Human Hand" class="hand human-hand" id="human-hand">
+            </div>
+        </main>
+
+        <footer class="trusted-section">
+            <p class="trusted-text">Our Performance Marketing Services are Certified by</p>
+            <div class="logos-container">
+                <div class="logo-item">Meta Partner</div>
+                <div class="logo-item">Google Partner</div>
+                <div class="logo-item">Shopify</div>
+                <div class="logo-item">▲ Vercel</div>
+                <div class="logo-item">HubSpot</div>
+                <div class="logo-item">Semrush</div>
+            </div>
+        </footer>
     </div>
+
+    <!-- ====== SCROLLABLE CONTENT (Below hero) ====== -->
+    <div class="content-below" id="content-below">
+
+        <!-- ====== SERVICES SECTION ====== -->
+        <section class="section services-section" id="services">
+            <div class="section-container">
+                <div class="section-label"><span>SERVICES • SERVICES • SERVICES</span></div>
+                <h2 class="section-title">Our Services</h2>
+                <p class="section-subtitle">Everything you need to supercharge your brand's digital presence.</p>
+                
+                <div class="services-grid">
+                    <div class="service-card" id="service-strategic">
+                        <div class="service-icon">🎯</div>
+                        <h3>Strategic Marketing</h3>
+                        <p>Catapult your brand into the spotlight with our genius strategies – it's like magic, but for marketing.</p>
+                    </div>
+                    <div class="service-card" id="service-social">
+                        <div class="service-icon">📱</div>
+                        <h3>Social Media Management</h3>
+                        <p>Hands-free social success! While you focus on your cat videos, we'll make sure your brand shines across all social platforms.</p>
+                    </div>
+                    <div class="service-card" id="service-seo">
+                        <div class="service-icon">🔍</div>
+                        <h3>Search Engine Optimization</h3>
+                        <p>Boost your online swagger! We'll spruce up your website so Google has no choice but to be your biggest fan.</p>
+                    </div>
+                    <div class="service-card" id="service-design">
+                        <div class="service-icon">🎨</div>
+                        <h3>Creative Design</h3>
+                        <p>Picture-perfect branding and graphics – we make your competitors jealous, and your audience adore you.</p>
+                    </div>
+                    <div class="service-card" id="service-tech">
+                        <div class="service-icon">⚙️</div>
+                        <h3>Technical Solutions</h3>
+                        <p>From tech wizardry to seamless online experiences, we turn digital hiccups into high-fives for your users.</p>
+                    </div>
+                    <div class="service-card" id="service-automation">
+                        <div class="service-icon">🤖</div>
+                        <h3>Automation Services</h3>
+                        <p>Automagically enhance efficiency! Our automation tricks make your processes smoother than a freshly buttered slide.</p>
+                    </div>
+                </div>
+                <div class="section-cta">
+                    <span>Want to discuss?</span>
+                    <a href="#contact" class="cta-link">Let's Schedule a Call <span class="arrow">↗</span></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== SERVICES DETAIL (Horizontal scrolling cards) ====== -->
+        <section class="section service-details-section">
+            <div class="section-container">
+                <div class="detail-cards-scroll">
+                    <div class="marquee-track">
+                        <div class="marquee-content">
+                            <div class="detail-card detail-card-ads" data-service-id="strategic">
+                                <div class="detail-label">ADS • ADS • ADS</div>
+                                <h3>Strategic Marketing</h3>
+                                <p>Ready to give your brand the spotlight it deserves? Dive into our Paid Ads extravaganza and let your message shine in the digital universe!</p>
+                            </div>
+                            <div class="detail-card detail-card-design" data-service-id="design">
+                                <div class="detail-label">DESIGN • DESIGN • DESIGN</div>
+                                <h3>Eye-catchy Designs</h3>
+                                <p>We craft visuals that speak to your ideal customers. Ready for an extraordinary brand transformation?</p>
+                            </div>
+                            <div class="detail-card detail-card-social" data-service-id="social">
+                                <div class="detail-label">SOCIAL • SOCIAL • SOCIAL</div>
+                                <h3>Social Media</h3>
+                                <p>Ready to make your brand the talk of the social town? Dive into our Social Media Management expertise and let your brand resonate across digital platforms!</p>
+                            </div>
+                            <div class="detail-card detail-card-auto" data-service-id="automation">
+                                <div class="detail-label">AUTOMATE • AUTOMATE • AUTOMATE</div>
+                                <h3>Automation</h3>
+                                <p>Automate the manual task, Save the time and energy, Only focus on delivering quality.</p>
+                            </div>
+                            <div class="detail-card detail-card-web" data-service-id="web">
+                                <div class="detail-label">WEB • WEB • WEB</div>
+                                <h3>Web Development</h3>
+                                <p>From tech wizardry to seamless online experiences – enter the world of Technical Solutions. We transform digital hiccups into high-fives for your users.</p>
+                            </div>
+                            <div class="detail-card detail-card-seo" data-service-id="seo">
+                                <div class="detail-label">SEO • SEO • SEO</div>
+                                <h3>Robust SEO</h3>
+                                <p>Elevate your online presence, automate workflows, and define digital brilliance with hassle-free SEO.</p>
+                            </div>
+                        </div>
+                        <div class="marquee-content" aria-hidden="true">
+                            <div class="detail-card detail-card-ads" data-service-id="strategic">
+                                <div class="detail-label">ADS • ADS • ADS</div>
+                                <h3>Strategic Marketing</h3>
+                                <p>Ready to give your brand the spotlight it deserves? Dive into our Paid Ads extravaganza and let your message shine in the digital universe!</p>
+                            </div>
+                            <div class="detail-card detail-card-design" data-service-id="design">
+                                <div class="detail-label">DESIGN • DESIGN • DESIGN</div>
+                                <h3>Eye-catchy Designs</h3>
+                                <p>We craft visuals that speak to your ideal customers. Ready for an extraordinary brand transformation?</p>
+                            </div>
+                            <div class="detail-card detail-card-social" data-service-id="social">
+                                <div class="detail-label">SOCIAL • SOCIAL • SOCIAL</div>
+                                <h3>Social Media</h3>
+                                <p>Ready to make your brand the talk of the social town? Dive into our Social Media Management expertise and let your brand resonate across digital platforms!</p>
+                            </div>
+                            <div class="detail-card detail-card-auto" data-service-id="automation">
+                                <div class="detail-label">AUTOMATE • AUTOMATE • AUTOMATE</div>
+                                <h3>Automation</h3>
+                                <p>Automate the manual task, Save the time and energy, Only focus on delivering quality.</p>
+                            </div>
+                            <div class="detail-card detail-card-web" data-service-id="web">
+                                <div class="detail-label">WEB • WEB • WEB</div>
+                                <h3>Web Development</h3>
+                                <p>From tech wizardry to seamless online experiences – enter the world of Technical Solutions. We transform digital hiccups into high-fives for your users.</p>
+                            </div>
+                            <div class="detail-card detail-card-seo" data-service-id="seo">
+                                <div class="detail-label">SEO • SEO • SEO</div>
+                                <h3>Robust SEO</h3>
+                                <p>Elevate your online presence, automate workflows, and define digital brilliance with hassle-free SEO.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== CLIENTS / CASE STUDIES ====== -->
+        <section class="section clients-section" id="clients">
+            <div class="section-container">
+                <div class="section-label"><span>CLIENTS • CLIENTS • CLIENTS</span></div>
+                <h2 class="section-title">Our Clients</h2>
+                <p class="section-subtitle">Real results, real brands, real growth.</p>
+
+                <div class="clients-grid">
+                    <div class="client-card" id="client-1">
+                        <div class="client-stat">4Cr+ Revenue Generated</div>
+                        <p class="client-desc">Askin Astrogy worked his astrological wonders with Grovix's enchanting services</p>
+                    </div>
+                    <div class="client-card" id="client-2">
+                        <div class="client-stat">Generated 12,000+ Quality Leads</div>
+                        <p class="client-desc">Arjun Deshpande, the brain behind Generic Aadhaar, teamed up with Grovix for a dynamic duo of innovation</p>
+                    </div>
+                    <div class="client-card" id="client-3">
+                        <div class="client-stat">Sold Course to 10,000+ People</div>
+                        <p class="client-desc">Naman Deshmukh effortlessly launched his course to stardom with Grovix's magic touch</p>
+                    </div>
+                    <div class="client-card" id="client-4">
+                        <div class="client-stat">Selling Podcasting Course</div>
+                        <p class="client-desc">Realhit transformed its course into a digital sensation using Grovix's powerful services</p>
+                    </div>
+                    <div class="client-card" id="client-5">
+                        <div class="client-stat">10x Return on eCommerce</div>
+                        <p class="client-desc">Astro Arun Pandit soared to success, growing their e-commerce brand with Grovix's magic</p>
+                    </div>
+                    <div class="client-card" id="client-6">
+                        <div class="client-stat">Conversion Rate Increased By 50%</div>
+                        <p class="client-desc">Ridhima Arora of Namhya Foods spiced up her website's appeal with a revamp by Grovix</p>
+                    </div>
+                    <div class="client-card" id="client-7">
+                        <div class="client-stat">30% More Upsales & 50% More Profit</div>
+                        <p class="client-desc">Acharya Pankaj orchestrated success in their webinar funnel growth with Grovix's magic touch</p>
+                    </div>
+                </div>
+                <div class="section-cta">
+                    <span>Want to create yours?</span>
+                    <a href="#contact" class="cta-link">Let's Schedule a Call <span class="arrow">↗</span></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== PROCESS / ONBOARDING ====== -->
+        <section class="section process-section" id="process">
+            <div class="section-container">
+                <div class="section-label"><span>ONBOARDING • ONBOARDING • ONBOARDING</span></div>
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Three simple steps to growth.</p>
+
+                <!-- Hidden SVG defs for border gradient -->
+                <svg width="0" height="0" style="position:absolute">
+                    <defs>
+                        <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6c3fff"/>
+                            <stop offset="50%" stop-color="#a78bfa"/>
+                            <stop offset="100%" stop-color="#6c3fff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div class="process-steps">
+                    <div class="process-step" id="step-1">
+                        <div class="step-number">01</div>
+                        <h3>Plan Your Growth</h3>
+                        <p>Dream big, strategize with us, and turn plans into profits.</p>
+                    </div>
+                    <div class="process-connector"></div>
+                    <div class="process-step" id="step-2">
+                        <div class="step-number">02</div>
+                        <h3>Handover the Project</h3>
+                        <p>We're your project navigators, turning plans into reality. Smooth sailing guaranteed.</p>
+                    </div>
+                    <div class="process-connector"></div>
+                    <div class="process-step" id="step-3">
+                        <div class="step-number">03</div>
+                        <h3>Count the Profit</h3>
+                        <p>Sit back, relax, and let the profits set sail. Your success story starts with us!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== WHY US (Comparison Table) ====== -->
+        <section class="section why-section" id="why-us">
+            <div class="section-container">
+                <div class="section-label"><span>SPECIAL • SPECIAL • SPECIAL</span></div>
+                <h2 class="section-title">What Makes Us Unique?</h2>
+                <p class="section-subtitle">Grovix V/S Others</p>
+
+                <div class="comparison-table">
+                    <div class="comparison-header">
+                        <div class="comparison-col others-col">OTHERS</div>
+                        <div class="comparison-col grovix-col">GROVIX</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item others">
+                            <span class="comp-icon comp-bad">✗</span>
+                            Longer turnaround times
+                        </div>
+                        <div class="comparison-item grovix">
+                            <span class="comp-icon comp-good">✓</span>
+                            Faster & quick response time
+                        </div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item others">
+                            <span class="comp-icon comp-bad">✗</span>
+                            Mediocre methods
+                        </div>
+                        <div class="comparison-item grovix">
+                            <span class="comp-icon comp-good">✓</span>
+                            Ethical & transparent approach
+                        </div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item others">
+                            <span class="comp-icon comp-bad">✗</span>
+                            Lack of timely reporting
+                        </div>
+                        <div class="comparison-item grovix">
+                            <span class="comp-icon comp-good">✓</span>
+                            Accurate & real-time reporting
+                        </div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item others">
+                            <span class="comp-icon comp-bad">✗</span>
+                            Delayed / unhelpful support
+                        </div>
+                        <div class="comparison-item grovix">
+                            <span class="comp-icon comp-good">✓</span>
+                            Precise resolutions
+                        </div>
+                    </div>
+                </div>
+                <div class="section-cta">
+                    <span>Still have a question?</span>
+                    <a href="#contact" class="cta-link">Chat with our experts <span class="arrow">↗</span></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== REVIEWS / TESTIMONIALS ====== -->
+        <section class="section reviews-section" id="reviews">
+            <div class="section-container">
+                <div class="section-label"><span>REVIEWS • REVIEWS • REVIEWS</span></div>
+                <h2 class="section-title">Hear From Them</h2>
+                <p class="section-subtitle">What our clients say about working with us.</p>
+
+                <div class="testimonials-grid">
+                    <div class="testimonial-card" id="testimonial-1">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">"Choosing Grovix means choosing a results-driven, client-focused, and technologically advanced digital marketing partner. Their track record speaks for itself."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">AK</div>
+                            <div class="author-info">
+                                <span class="author-name">Askin Astrogy</span>
+                                <span class="author-role">Business Owner</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card" id="testimonial-2">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">"Grovix stands out by offering a potent combination of advanced technology, customization options, data-driven insights, and proven results."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">ND</div>
+                            <div class="author-info">
+                                <span class="author-name">Naman Deshmukh</span>
+                                <span class="author-role">Course Creator</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card" id="testimonial-3">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">"Grovix's commitment to accuracy is upheld through advanced technology, real-time validation, transparency, and a rigorous quality control process."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">RA</div>
+                            <div class="author-info">
+                                <span class="author-name">Ridhima Arora</span>
+                                <span class="author-role">Namhya Foods</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== FAQ ====== -->
+        <section class="section faq-section" id="faq">
+            <div class="section-container">
+                <div class="section-label"><span>FAQ • FAQ • FAQ</span></div>
+                <h2 class="section-title">Need Help?</h2>
+
+                <div class="faq-list">
+                    <div class="faq-item" id="faq-1">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>Why should I choose Grovix over other agencies?</span>
+                            <span class="faq-toggle">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Choosing Grovix means choosing a results-driven, client-focused, and technologically advanced digital marketing partner. With a proven track record, personalized strategies, and a commitment to transparent communication, we are confident in our ability to elevate your online presence and drive sustainable business growth.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item" id="faq-2">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>What sets Grovix apart from the competition?</span>
+                            <span class="faq-toggle">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Grovix stands out in the crowded digital advertising landscape by offering a potent combination of advanced technology, customization options, data-driven insights, and a proven track record.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item" id="faq-3">
+                        <button class="faq-question" aria-expanded="false">
+                            <span>How can Grovix guarantee accurate reporting?</span>
+                            <span class="faq-toggle">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Grovix's commitment to accuracy is upheld through advanced technology, real-time validation, transparency, a knowledgeable team, and a rigorous quality control process. By choosing Grovix, clients can trust that their reporting is reliable and reflects the most accurate and current data available.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== CONTACT ====== -->
+        <section class="section contact-section" id="contact">
+            <div class="section-container">
+                <h2 class="section-title">Send a Message</h2>
+                <p class="section-subtitle">We're here to answer any question you may have.</p>
+
+                <div class="contact-grid">
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" placeholder="Your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="your@email.com" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="4" placeholder="Tell us about your project..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message <span class="arrow">↗</span></button>
+                    </form>
+
+                    <div class="contact-info">
+                        <div class="info-card">
+                            <h4>Careers</h4>
+                            <p>Would you like to join our growing team?</p>
+                            <a href="mailto:career@grovix.com">career@grovix.com</a>
+                        </div>
+                        <div class="info-card">
+                            <h4>Feedback</h4>
+                            <p>Have a project in mind?</p>
+                            <a href="mailto:hello@grovix.com">hello@grovix.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== FOOTER ====== -->
+        <footer class="site-footer" id="site-footer">
+            <div class="section-container footer-inner">
+                <div class="footer-brand">
+                    <div class="footer-logo">GROVIX</div>
+                    <p class="footer-tagline">Bold ideas that start with vision.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#services">Services</a>
+                    <a href="#clients">Clients</a>
+                    <a href="#why-us">Why Grovix?</a>
+                    <a href="#reviews">Reviews</a>
+                    <a href="#faq">FAQs</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" aria-label="LinkedIn">in</a>
+                    <a href="#" aria-label="Instagram">ig</a>
+                    <a href="#" aria-label="Twitter">𝕏</a>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2025 Grovix Private Limited | <a href="#">Privacy Policy</a></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ====== SERVICE MODAL ====== -->
+    <div id="service-modal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="modal-close" id="modal-close" aria-label="Close modal">×</button>
+            <div class="modal-content-inner">
+                <div class="modal-label" id="modal-label"></div>
+                <h2 class="modal-title" id="modal-title"></h2>
+                <div class="modal-body" id="modal-body"></div>
+                <a href="#contact" class="modal-cta" id="modal-cta" onclick="document.getElementById('modal-close').click()">Get Started <span class="arrow">↗</span></a>
+            </div>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
