@@ -1,4 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // ====== LOADING SCREEN ======
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        document.body.classList.add('loading');
+
+        let minTimerDone = false;
+        let pageLoaded = false;
+
+        function dismissLoader() {
+            if (minTimerDone && pageLoaded) {
+                loadingScreen.classList.add('fade-out');
+                document.body.classList.remove('loading');
+                // Remove from DOM after fade transition
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 700);
+            }
+        }
+
+        // Minimum 3 second display
+        setTimeout(() => {
+            minTimerDone = true;
+            dismissLoader();
+        }, 3000);
+
+        // Wait for full page load (images, fonts, etc.)
+        if (document.readyState === 'complete') {
+            pageLoaded = true;
+        } else {
+            window.addEventListener('load', () => {
+                pageLoaded = true;
+                dismissLoader();
+            });
+        }
+    }
+
+    // ====== SMOOTH SCROLL HELPER ======
+    const smoothScrollTo = (targetY, duration = 800) => {
+        const startY = window.scrollY;
+        const distance = targetY - startY;
+        let startTime = null;
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3); // cubic ease out
+            window.scrollTo(0, startY + distance * ease);
+            if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    };
+
     // ====== HERO TEXT ANIMATION ======
     const words = document.querySelectorAll('.hero-title .word');
     const subtitle = document.querySelector('.hero-subtitle');
@@ -61,6 +112,98 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
         document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
     });
+
+    // ====== GLOBAL DOT GRID CANVAS ======
+    const globalCanvas = document.getElementById('global-reactive-canvas');
+    if (globalCanvas) {
+        const ctx = globalCanvas.getContext('2d');
+        let dots = [];
+        const spacing = 8;
+        let globalMouse = { x: -1000, y: -1000 };
+        let targetGlobalMouse = { x: -1000, y: -1000 };
+        
+        const resizeCanvas = () => {
+            globalCanvas.width = window.innerWidth;
+            globalCanvas.height = window.innerHeight;
+            dots = [];
+            for (let x = 0; x < globalCanvas.width + spacing; x += spacing) {
+                for (let y = 0; y < globalCanvas.height + spacing; y += spacing) {
+                    dots.push({ baseX: x, baseY: y, x: x, y: y });
+                }
+            }
+        };
+        
+        window.addEventListener('resize', resizeCanvas);
+        document.addEventListener('mousemove', (e) => {
+            targetGlobalMouse.x = e.clientX;
+            targetGlobalMouse.y = e.clientY;
+        });
+        
+        resizeCanvas();
+        
+        const animateCanvas = () => {
+            globalMouse.x += (targetGlobalMouse.x - globalMouse.x) * 0.2;
+            globalMouse.y += (targetGlobalMouse.y - globalMouse.y) * 0.2;
+            
+            ctx.clearRect(0, 0, globalCanvas.width, globalCanvas.height);
+            
+            // Dynamically change dot color based on hero dark mode state
+            const isDark = document.documentElement.style.getPropertyValue('--white-bg-opacity') === '1';
+            ctx.fillStyle = isDark ? '#ffffff' : '#111111';
+            
+            const visibilityRadius = window.innerWidth * 0.07813; // Matches 7.813vw
+            const repulsionRadius = visibilityRadius * 0.6; // Smaller repulsion radius
+            const visRadSq = visibilityRadius * visibilityRadius;
+            
+            for (let i = 0; i < dots.length; i++) {
+                const dot = dots[i];
+                const dx = globalMouse.x - dot.baseX;
+                
+                // Fast AABB check to skip distant dots
+                if (Math.abs(dx) > visibilityRadius + 50) {
+                    dot.x = dot.baseX;
+                    dot.y = dot.baseY;
+                    continue;
+                }
+                const dy = globalMouse.y - dot.baseY;
+                if (Math.abs(dy) > visibilityRadius + 50) {
+                    dot.x = dot.baseX;
+                    dot.y = dot.baseY;
+                    continue;
+                }
+                
+                const distSq = dx * dx + dy * dy;
+                
+                if (distSq < visRadSq) {
+                    const dist = Math.sqrt(distSq);
+                    const opacity = Math.max(0, 1 - (dist / visibilityRadius));
+                    
+                    let offsetX = 0;
+                    let offsetY = 0;
+                    
+                    // Repulsion logic
+                    if (dist < repulsionRadius && dist > 0.1) {
+                        const force = (repulsionRadius - dist) / repulsionRadius;
+                        const pushDistance = force * 6; // Max 6px push away
+                        offsetX = (dx / dist) * -pushDistance;
+                        offsetY = (dy / dist) * -pushDistance;
+                    }
+                    
+                    // Spring physics
+                    dot.x += ((dot.baseX + offsetX) - dot.x) * 0.3;
+                    dot.y += ((dot.baseY + offsetY) - dot.y) * 0.3;
+                    
+                    ctx.globalAlpha = opacity * 0.7; // Reduced opacity for subtlety
+                    ctx.fillRect(dot.x - 0.8, dot.y - 0.8, 1.6, 1.6); // Slightly smaller dot
+                } else {
+                    dot.x = dot.baseX;
+                    dot.y = dot.baseY;
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        };
+        animateCanvas();
+    }
 
     // ====== SCROLL ANIMATION (Hero viewport) ======
     const bigBangCircle = document.getElementById('big-bang-circle');
@@ -439,9 +582,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const compObserver = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            // Snap to center and lock scroll
-                            entry.target.scrollIntoView({ block: 'center' });
+                            // Snap section to center and lock scroll
+                            const section = entry.target.closest('.section') || entry.target;
+                            const rect = section.getBoundingClientRect();
+                            const targetY = window.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
                             document.body.style.overflow = 'hidden';
+                            smoothScrollTo(targetY, 800);
+
                             
                             animateComparisonTable();
                             
@@ -549,9 +696,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const processObserver = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            // Snap to center and lock scroll
-                            entry.target.scrollIntoView({ block: 'center' });
+                            // Snap section to center and lock scroll
+                            const section = entry.target.closest('.section') || entry.target;
+                            const rect = section.getBoundingClientRect();
+                            const targetY = window.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
                             document.body.style.overflow = 'hidden';
+                            smoothScrollTo(targetY, 800);
+
                             
                             animateSequence();
                             
@@ -818,5 +969,143 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
             }
         });
+    }
+
+    // ====== ANIMATED CLIENTS GRID ======
+    const animatedClientsGrid = document.getElementById('clients-grid-animated');
+    if (animatedClientsGrid) {
+        const clientCards = Array.from(animatedClientsGrid.querySelectorAll('.client-card-animated'));
+        
+        // 7 slots. 
+        // 0-2: Left column (top, mid, bot)
+        // 3: Center column
+        // 4-6: Right column (top, mid, bot)
+        const slots = [
+            { left: '3%', top: '7%', width: '22%', height: '26%' },
+            { left: '3%', top: '37%', width: '22%', height: '26%' },
+            { left: '3%', top: '67%', width: '22%', height: '26%' },
+            { left: '34%', top: '7%', width: '32%', height: '86%' }, // Center
+            { left: '75%', top: '7%', width: '22%', height: '26%' },
+            { left: '75%', top: '37%', width: '22%', height: '26%' },
+            { left: '75%', top: '67%', width: '22%', height: '26%' }
+        ];
+
+        let cardToSlot = [0, 1, 2, 3, 4, 5, 6];
+        let isAnimating = false;
+
+        // Apply slot geometry to a card
+        function applySlot(card, slot) {
+            card.style.left = slot.left;
+            card.style.top = slot.top;
+            card.style.width = slot.width;
+            card.style.height = slot.height;
+        }
+
+        // Double-rAF: ensures transition is committed in frame N,
+        // then the new values are applied in frame N+1 so the browser sees
+        // a "from" and "to" state and actually animates between them.
+        function nextFrame(fn) {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(fn);
+            });
+        }
+
+        // ---- Initial layout (instant, no transition) ----
+        clientCards.forEach((card, i) => {
+            card.style.transition = 'none';
+            applySlot(card, slots[cardToSlot[i]]);
+            if (cardToSlot[i] === 3) {
+                card.classList.add('is-center');
+            }
+        });
+
+        // ---- Swap animation ----
+        function performSwap() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const centerCardIdx = cardToSlot.indexOf(3);
+            const sideSlotOptions = [0, 1, 2, 4, 5, 6];
+            const targetSideSlot = sideSlotOptions[Math.floor(Math.random() * sideSlotOptions.length)];
+            const sideCardIdx = cardToSlot.indexOf(targetSideSlot);
+
+            const centerCard = clientCards[centerCardIdx];
+            const sideCard = clientCards[sideCardIdx];
+
+            const centerSlot = slots[3];
+            const sideSlot = slots[targetSideSlot];
+
+            // Shrunk position: side-card size centered within center slot area
+            const shrunkLeft = (parseFloat(centerSlot.left) + (parseFloat(centerSlot.width) - parseFloat(sideSlot.width)) / 2) + '%';
+            const shrunkTop = (parseFloat(centerSlot.top) + (parseFloat(centerSlot.height) - parseFloat(sideSlot.height)) / 2) + '%';
+
+            // ===== PHASE 1: Shrink center card =====
+            // Set transition, then in the NEXT frame set the target values
+            centerCard.style.transition = 'left 0.6s cubic-bezier(0.4,0,0.2,1), top 0.6s cubic-bezier(0.4,0,0.2,1), width 0.6s cubic-bezier(0.4,0,0.2,1), height 0.6s cubic-bezier(0.4,0,0.2,1), padding 0.6s cubic-bezier(0.4,0,0.2,1), background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease';
+            // Force browser to acknowledge the transition before changing values
+            getComputedStyle(centerCard).transition;
+
+            nextFrame(() => {
+                centerCard.style.width = sideSlot.width;
+                centerCard.style.height = sideSlot.height;
+                centerCard.style.left = shrunkLeft;
+                centerCard.style.top = shrunkTop;
+                centerCard.style.padding = '1.5vw';
+                centerCard.classList.remove('is-center');
+            });
+
+            // ===== PHASE 2: Slide both cards (after shrink finishes) =====
+            setTimeout(() => {
+                // Set slide transition on both
+                centerCard.style.transition = 'left 1s cubic-bezier(0.25,0.46,0.45,0.94), top 1s cubic-bezier(0.25,0.46,0.45,0.94)';
+                sideCard.style.transition = 'left 1s cubic-bezier(0.25,0.46,0.45,0.94), top 1s cubic-bezier(0.25,0.46,0.45,0.94)';
+                getComputedStyle(centerCard).transition;
+                getComputedStyle(sideCard).transition;
+
+                // Elevate z-index so sliding cards pass over the rest
+                centerCard.style.zIndex = '20';
+                sideCard.style.zIndex = '20';
+
+                nextFrame(() => {
+                    // Old center card slides out to its new side position
+                    centerCard.style.left = sideSlot.left;
+                    centerCard.style.top = sideSlot.top;
+
+                    // Side card slides into the center area (at side-card size)
+                    sideCard.style.left = shrunkLeft;
+                    sideCard.style.top = shrunkTop;
+                });
+
+                // ===== PHASE 3: Expand the new center card =====
+                setTimeout(() => {
+                    sideCard.style.transition = 'left 0.7s cubic-bezier(0.4,0,0.2,1), top 0.7s cubic-bezier(0.4,0,0.2,1), width 0.7s cubic-bezier(0.4,0,0.2,1), height 0.7s cubic-bezier(0.4,0,0.2,1), padding 0.7s cubic-bezier(0.4,0,0.2,1), background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease';
+                    getComputedStyle(sideCard).transition;
+
+                    nextFrame(() => {
+                        sideCard.style.width = centerSlot.width;
+                        sideCard.style.height = centerSlot.height;
+                        sideCard.style.left = centerSlot.left;
+                        sideCard.style.top = centerSlot.top;
+                        sideCard.style.padding = '3vw';
+                        sideCard.classList.add('is-center');
+                    });
+
+                    // ===== Cleanup =====
+                    setTimeout(() => {
+                        centerCard.style.transition = 'none';
+                        sideCard.style.transition = 'none';
+                        centerCard.style.zIndex = '1';
+                        sideCard.style.zIndex = '1';
+
+                        cardToSlot[centerCardIdx] = targetSideSlot;
+                        cardToSlot[sideCardIdx] = 3;
+                        isAnimating = false;
+                    }, 800);
+                }, 1100); // wait for slide
+            }, 700); // wait for shrink
+        }
+
+        // Kick off the loop
+        setInterval(performSwap, 5000);
     }
 });

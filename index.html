@@ -11,6 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- ====== LOADING SCREEN ====== -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loader-text-wrapper">
+            <span class="loader-text-outline">GROVIX</span>
+            <span class="loader-text-fill">GROVIX</span>
+        </div>
+    </div>
+
     <header class="navbar" id="main-navbar">
         <div class="logo">GROVIX</div>
         <nav class="nav-links">
@@ -31,8 +39,6 @@
 
     <!-- ====== HERO VIEWPORT (Fixed, scroll-driven) ====== -->
     <div class="scroll-wrapper" id="hero-viewport">
-        <div class="reactive-bg"></div>
-        <div class="reactive-bg-white"></div>
         <div class="noise-overlay"></div>
     
 
@@ -73,6 +79,7 @@
 
     <!-- ====== SCROLLABLE CONTENT (Below hero) ====== -->
     <div class="content-below" id="content-below">
+        <canvas class="global-reactive-canvas" id="global-reactive-canvas"></canvas>
 
         <!-- ====== SERVICES SECTION ====== -->
         <section class="section services-section" id="services">
@@ -200,37 +207,40 @@
                 <div class="section-label"><span>CLIENTS • CLIENTS • CLIENTS</span></div>
                 <h2 class="section-title">Our <span class="fly-target" data-nav="Clients">Clients</span></h2>
                 <p class="section-subtitle">Real results, real brands, real growth.</p>
-
-                <div class="clients-grid">
-                    <div class="client-card" id="client-1">
-                        <div class="client-stat">4Cr+ Revenue Generated</div>
-                        <p class="client-desc">Askin Astrogy worked his astrological wonders with Grovix's enchanting services</p>
-                    </div>
-                    <div class="client-card" id="client-2">
-                        <div class="client-stat">Generated 12,000+ Quality Leads</div>
-                        <p class="client-desc">Arjun Deshpande, the brain behind Generic Aadhaar, teamed up with Grovix for a dynamic duo of innovation</p>
-                    </div>
-                    <div class="client-card" id="client-3">
-                        <div class="client-stat">Sold Course to 10,000+ People</div>
-                        <p class="client-desc">Naman Deshmukh effortlessly launched his course to stardom with Grovix's magic touch</p>
-                    </div>
-                    <div class="client-card" id="client-4">
-                        <div class="client-stat">Selling Podcasting Course</div>
-                        <p class="client-desc">Realhit transformed its course into a digital sensation using Grovix's powerful services</p>
-                    </div>
-                    <div class="client-card" id="client-5">
-                        <div class="client-stat">10x Return on eCommerce</div>
-                        <p class="client-desc">Astro Arun Pandit soared to success, growing their e-commerce brand with Grovix's magic</p>
-                    </div>
-                    <div class="client-card" id="client-6">
-                        <div class="client-stat">Conversion Rate Increased By 50%</div>
-                        <p class="client-desc">Ridhima Arora of Namhya Foods spiced up her website's appeal with a revamp by Grovix</p>
-                    </div>
-                    <div class="client-card" id="client-7">
-                        <div class="client-stat">30% More Upsales & 50% More Profit</div>
-                        <p class="client-desc">Acharya Pankaj orchestrated success in their webinar funnel growth with Grovix's magic touch</p>
-                    </div>
+            </div>
+            
+            <div class="clients-grid-animated" id="clients-grid-animated">
+                <div class="client-card client-card-animated" id="client-1">
+                    <div class="client-stat">4Cr+ Revenue Generated</div>
+                    <p class="client-desc">Askin Astrogy worked his astrological wonders with Grovix's enchanting services</p>
                 </div>
+                <div class="client-card client-card-animated" id="client-2">
+                    <div class="client-stat">Generated 12,000+ Quality Leads</div>
+                    <p class="client-desc">Arjun Deshpande, the brain behind Generic Aadhaar, teamed up with Grovix for a dynamic duo of innovation</p>
+                </div>
+                <div class="client-card client-card-animated" id="client-3">
+                    <div class="client-stat">Sold Course to 10,000+ People</div>
+                    <p class="client-desc">Naman Deshmukh effortlessly launched his course to stardom with Grovix's magic touch</p>
+                </div>
+                <div class="client-card client-card-animated" id="client-4">
+                    <div class="client-stat">Selling Podcasting Course</div>
+                    <p class="client-desc">Realhit transformed its course into a digital sensation using Grovix's powerful services</p>
+                </div>
+                <div class="client-card client-card-animated" id="client-5">
+                    <div class="client-stat">10x Return on eCommerce</div>
+                    <p class="client-desc">Astro Arun Pandit soared to success, growing their e-commerce brand with Grovix's magic</p>
+                </div>
+                <div class="client-card client-card-animated" id="client-6">
+                    <div class="client-stat">Conversion Rate Increased By 50%</div>
+                    <p class="client-desc">Ridhima Arora of Namhya Foods spiced up her website's appeal with a revamp by Grovix</p>
+                </div>
+                <div class="client-card client-card-animated" id="client-7">
+                    <div class="client-stat">30% More Upsales & 50% More Profit</div>
+                    <p class="client-desc">Acharya Pankaj orchestrated success in their webinar funnel growth with Grovix's magic touch</p>
+                </div>
+            </div>
+            
+            <div class="section-container">
                 <div class="section-cta">
                     <span>Want to create yours?</span>
                     <a href="#contact" class="cta-link">Let's Schedule a Call <span class="arrow">↗</span></a>
