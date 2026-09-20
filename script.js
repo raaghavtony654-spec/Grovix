@@ -1,36 +1,79 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ====== LOADING SCREEN ======
     const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
+    const loaderText = document.getElementById('loader-text');
+    const navLogo = document.querySelector('.logo');
+    if (loadingScreen && loaderText && navLogo) {
         document.body.classList.add('loading');
 
         let minTimerDone = false;
         let pageLoaded = false;
+        let handoffStarted = false;
 
-        function dismissLoader() {
-            if (minTimerDone && pageLoaded) {
-                loadingScreen.classList.add('fade-out');
+        function morphLoaderToNav() {
+            if (handoffStarted || !(minTimerDone && pageLoaded)) return;
+            handoffStarted = true;
+
+            // Match navbar type (weight, tracking) while the word is still centered.
+            loaderText.classList.add('matched');
+
+            const startMorph = () => {
+                const first = loaderText.getBoundingClientRect();
+                const last = navLogo.getBoundingClientRect();
+
+                const dx = (last.left + last.width / 2) - (first.left + first.width / 2);
+                const dy = (last.top + last.height / 2) - (first.top + first.height / 2);
+                const scale = last.width / first.width;
+
+                document.body.classList.add('loader-morphing');
                 document.body.classList.remove('loading');
-                // Remove from DOM after fade transition
-                setTimeout(() => {
+                loadingScreen.classList.add('handoff');
+
+                requestAnimationFrame(() => {
+                    loaderText.style.transition = 'transform 1.05s cubic-bezier(0.76, 0, 0.24, 1)';
+                    loaderText.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+                });
+
+                let finished = false;
+                const finish = () => {
+                    if (finished) return;
+                    finished = true;
+                    navLogo.style.opacity = '1';
                     loadingScreen.remove();
-                }, 700);
-            }
+                    document.body.classList.remove('loader-morphing');
+                    navLogo.style.removeProperty('opacity');
+                };
+
+                loaderText.addEventListener('transitionend', (event) => {
+                    if (event.propertyName === 'transform') finish();
+                }, { once: true });
+
+                setTimeout(finish, 1200);
+            };
+
+            // Let letter-spacing settle so the large mark already looks like the nav logo.
+            setTimeout(startMorph, 420);
         }
 
-        // Minimum 3 second display
         setTimeout(() => {
             minTimerDone = true;
-            dismissLoader();
+            morphLoaderToNav();
         }, 3000);
 
-        // Wait for full page load (images, fonts, etc.)
+        // Failsafe: force pageLoaded to true after 3500ms just in case a network resource is hanging
+        setTimeout(() => {
+            if (!pageLoaded) {
+                pageLoaded = true;
+                morphLoaderToNav();
+            }
+        }, 3500);
+
         if (document.readyState === 'complete') {
             pageLoaded = true;
         } else {
             window.addEventListener('load', () => {
                 pageLoaded = true;
-                dismissLoader();
+                morphLoaderToNav();
             });
         }
     }
@@ -212,10 +255,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentBelow = document.getElementById('content-below');
 
     // Calculate how much of the body scroll is dedicated to the hero animation
-    const heroScrollHeight = window.innerHeight * 1.5; // body is 250vh, hero takes ~150vh of scroll
+    const heroScrollHeight = window.innerHeight * 0.6; // Increased distance for a smoother, slower animation
+
+    let hasAutoScrolledHero = false;
 
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY;
+
+        // Automatically complete the hero animation on first scroll
+        if (!hasAutoScrolledHero && scrollY > 5 && scrollY < heroScrollHeight - 5) {
+            hasAutoScrolledHero = true;
+            // Temporarily disable user scroll to ensure smooth transition
+            document.body.style.overflow = 'hidden';
+            smoothScrollTo(heroScrollHeight, 2000); // 2000ms for a slower, smoother glide
+            setTimeout(() => {
+                document.body.style.overflow = '';
+            }, 2050);
+        }
+
         const progress = Math.max(0, Math.min(1, scrollY / heroScrollHeight));
 
         // Phase 1: Close hands
@@ -335,143 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             revealElements.forEach(el => revealObserver.observe(el));
 
-            // ====== NAV TEXT FLY-TO-SECTION ANIMATION ======
-            const flyNavLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-            const sectionFlyMap = [];
 
-            flyNavLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                const section = document.querySelector(href);
-                if (!section) return;
-                const sectionTitle = section.querySelector('.section-title');
-                if (!sectionTitle) return;
-                // Find the fly-target span that matches this nav link's text
-                const navText = link.textContent.trim();
-                const flyTarget = sectionTitle.querySelector(`.fly-target[data-nav="${navText}"]`);
-                sectionFlyMap.push({ link, section, sectionTitle, flyTarget, titleRevealed: false });
-            });
-
-            // Remove these titles from generic reveal & mark as fly-managed
-            sectionFlyMap.forEach(({ sectionTitle }) => {
-                sectionTitle.classList.remove('reveal');
-                revealObserver.unobserve(sectionTitle);
-                sectionTitle.classList.add('fly-managed');
-            });
-
-            // One-time title reveal with flying text clone
-            // Helper: convert px to vw (based on current viewport width)
-            const toVw = (px) => (px / window.innerWidth) * 100;
-
-            const titleRevealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const data = sectionFlyMap.find(d => d.sectionTitle === entry.target);
-                        if (data && !data.titleRevealed) {
-                            data.titleRevealed = true;
-
-                            const vw = window.innerWidth;
-                            const linkRect = data.link.getBoundingClientRect();
-
-                            // ── START position: nav link in absolute document coords (vw) ──
-                            const startLeftVw = ((linkRect.left + window.scrollX) / vw) * 100;
-                            const startTopVw = ((linkRect.top + window.scrollY) / vw) * 100;
-
-                            // ── END position: fly-target in absolute document coords (vw) ──
-                            const landingEl = data.flyTarget || data.sectionTitle;
-
-                            // Temporarily reveal title (no transition) to measure final resting position
-                            data.sectionTitle.style.transition = 'none';
-                            data.sectionTitle.classList.add('fly-arrived');
-                            data.sectionTitle.offsetHeight; // force reflow
-
-                            const targetRect = landingEl.getBoundingClientRect();
-                            const targetFontSizeVw = (parseFloat(getComputedStyle(landingEl).fontSize) / vw) * 100;
-                            const endLeftVw = ((targetRect.left + window.scrollX) / vw) * 100;
-                            const endTopVw = ((targetRect.top + window.scrollY) / vw) * 100;
-
-                            // Hide it again immediately
-                            data.sectionTitle.classList.remove('fly-arrived');
-                            data.sectionTitle.offsetHeight; // force reflow
-                            data.sectionTitle.style.transition = '';
-
-                            // ── DELTA in vw (fixed, deterministic) ──
-                            const dxVw = endLeftVw - startLeftVw;
-                            const dyVw = endTopVw - startTopVw;
-
-                            // ── Create flyer at nav link's absolute document position ──
-                            const flyer = document.createElement('div');
-                            flyer.className = 'nav-text-flyer';
-                            flyer.textContent = data.link.textContent;
-                            flyer.style.left = startLeftVw + 'vw';
-                            flyer.style.top = startTopVw + 'vw';
-                            flyer.style.fontSize = '0.792vw';  // matches nav link font-size
-                            flyer.style.fontWeight = '500';
-                            flyer.style.opacity = '1';
-                            flyer.style.transform = 'translate(0, 0)';
-                            document.body.appendChild(flyer);
-
-                            // Force reflow to lock starting position
-                            flyer.offsetHeight;
-
-                            // ── Animate: translate by fixed vw delta + grow font in vw ──
-                            flyer.style.transition = 'transform 0.85s cubic-bezier(0.25, 1, 0.5, 1), font-size 0.85s ease, font-weight 0.85s ease';
-                            flyer.style.transform = `translate(${dxVw}vw, ${dyVw}vw)`;
-                            flyer.style.fontSize = targetFontSizeVw + 'vw';
-                            flyer.style.fontWeight = '800';
-
-                            // After arrival: reveal real title, fade out clone
-                            setTimeout(() => {
-                                data.sectionTitle.classList.add('fly-arrived');
-                                flyer.style.transition = 'opacity 0.3s ease';
-                                flyer.style.opacity = '0';
-                                setTimeout(() => flyer.remove(), 300);
-                            }, 850);
-                        }
-                        titleRevealObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.25 });
-
-            sectionFlyMap.forEach(d => titleRevealObserver.observe(d.sectionTitle));
-
-            // Scroll-based nav link management: only ONE hidden at a time
-            let currentHiddenLink = null;
-            let flyReady = false;
-            setTimeout(() => { flyReady = true; }, 600);
-
-            const updateActiveNavLink = () => {
-                if (!flyReady) return;
-
-                let activeData = null;
-
-                // Find the section whose top is above 40% of viewport and bottom is still visible
-                for (const data of sectionFlyMap) {
-                    const rect = data.section.getBoundingClientRect();
-                    if (rect.top < window.innerHeight * 0.4 && rect.bottom > 100) {
-                        activeData = data;
-                    }
-                }
-
-                const newHiddenLink = activeData ? activeData.link : null;
-
-                if (newHiddenLink !== currentHiddenLink) {
-                    // Immediately restore the previous nav link
-                    if (currentHiddenLink) {
-                        currentHiddenLink.style.transition = 'opacity 0.3s ease';
-                        currentHiddenLink.style.opacity = '1';
-                        currentHiddenLink.style.pointerEvents = '';
-                    }
-                    // Hide the new active one
-                    if (newHiddenLink) {
-                        newHiddenLink.style.transition = 'opacity 0.3s ease';
-                        newHiddenLink.style.opacity = '0';
-                        newHiddenLink.style.pointerEvents = 'none';
-                    }
-                    currentHiddenLink = newHiddenLink;
-                }
-            };
-
-            window.addEventListener('scroll', updateActiveNavLink, { passive: true });
 
 
             // ====== COMPARISON TABLE TEAR-THROUGH ANIMATION ======
@@ -1107,5 +1028,309 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Kick off the loop
         setInterval(performSwap, 5000);
+    }
+
+    // ====== GLOBAL PARTICLE HEADINGS ======
+    function initGlobalParticleHeadings() {
+        const canvas = document.getElementById('global-heading-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        // Define all headings
+        const heroTitle = document.querySelector('.hero-title');
+        const sectionTitles = Array.from(document.querySelectorAll('.section-title'));
+        const allHeadings = [heroTitle, ...sectionTitles].filter(Boolean);
+        
+        let particles = []; 
+        let targetsByHeading = []; 
+        let repelElements = []; 
+        
+        let mouse = { x: -1000, y: -1000, radius: window.innerWidth * 0.08 };
+        
+        document.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+        
+        function getTargetsForHeading(heading, step) {
+            const hRect = heading.getBoundingClientRect();
+            if (hRect.width === 0) return [];
+            
+            // Clone heading for safe mutation
+            const clone = heading.cloneNode(true);
+            clone.style.position = 'fixed';
+            clone.style.top = '0px';
+            clone.style.left = '0px';
+            clone.style.visibility = 'hidden';
+            clone.style.width = hRect.width + 'px'; 
+            clone.style.margin = '0px';
+            document.body.appendChild(clone);
+            
+            // Wrap text nodes in clone
+            const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null, false);
+            const textNodes = [];
+            let node;
+            while(node = walker.nextNode()) textNodes.push(node);
+            textNodes.forEach(n => {
+                if (n.nodeValue.trim().length > 0) {
+                    const span = document.createElement('span');
+                    span.className = 'particle-measure-span';
+                    span.textContent = n.nodeValue;
+                    n.parentNode.replaceChild(span, n);
+                }
+            });
+            
+            let headingTargets = [];
+            const spans = clone.querySelectorAll('.particle-measure-span');
+            spans.forEach(span => {
+                const sRect = span.getBoundingClientRect();
+                if (sRect.width === 0 || sRect.height === 0) return;
+                
+                const styles = window.getComputedStyle(span);
+                const fontSize = parseFloat(styles.fontSize) || 16;
+                
+                // Add padding to prevent clipping due to line-height or font bounding box
+                const paddingX = fontSize * 0.2;
+                const paddingY = fontSize * 0.6;
+                
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = sRect.width + paddingX * 2;
+                offCanvas.height = sRect.height + paddingY * 2;
+                const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+                
+                offCtx.font = `${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
+                offCtx.letterSpacing = styles.letterSpacing;
+                offCtx.fillStyle = '#ffffff';
+                offCtx.textBaseline = 'middle';
+                offCtx.textAlign = 'left';
+                
+                // Draw exactly centered vertically, offset by paddingX horizontally
+                offCtx.fillText(span.textContent, paddingX, offCanvas.height / 2); 
+                const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height).data;
+                
+                // Calculate local offsets relative to the heading's top-left corner
+                // Since the clone is at fixed top:0, left:0, sRect directly gives local offsets
+                // We subtract a small optical nudge (12% of height) to perfectly vertically center the text
+                const opticalNudge = sRect.height * 0.12; 
+                const localOffsetX = sRect.left - paddingX;
+                const localOffsetY = sRect.top + (sRect.height / 2) - (offCanvas.height / 2) - opticalNudge;
+                
+                for (let y = 0; y < offCanvas.height; y += step) {
+                    for (let x = 0; x < offCanvas.width; x += step) {
+                        const alpha = imgData[(y * offCanvas.width + x) * 4 + 3];
+                        if (alpha > 128) {
+                            headingTargets.push({
+                                localX: localOffsetX + x,
+                                localY: localOffsetY + y
+                            });
+                        }
+                    }
+                }
+            });
+            
+            document.body.removeChild(clone);
+            return headingTargets;
+        }
+        
+        function measureHeadings() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const step = Math.max(5, Math.floor(window.innerWidth / 250));
+            targetsByHeading = [];
+            let maxParticlesNeeded = 0;
+            
+            repelElements = Array.from(document.querySelectorAll('.service-card, .detail-card, .client-card, .step-card, .comparison-table, .review-card, .faq-item'));
+            
+            allHeadings.forEach((heading) => {
+                const wasHidden = heading.classList.contains('hide-text');
+                if(wasHidden) heading.classList.remove('hide-text');
+                
+                const headingTargets = getTargetsForHeading(heading, step);
+                targetsByHeading.push(headingTargets);
+                
+                if (headingTargets.length > maxParticlesNeeded) {
+                    maxParticlesNeeded = headingTargets.length;
+                }
+                
+                if(wasHidden) heading.classList.add('hide-text');
+            });
+            
+            // Initialize global particle pool or append if more are needed
+            if (targetsByHeading.length > 0) {
+                const heroTargets = targetsByHeading[0];
+                const hRect = allHeadings[0].getBoundingClientRect();
+                
+                while (particles.length < maxParticlesNeeded) {
+                    const idx = particles.length;
+                    const t = heroTargets[idx % heroTargets.length] || {localX: 0, localY: 0};
+                    particles.push({
+                        x: hRect.left + t.localX,
+                        y: hRect.top + t.localY,
+                        vx: 0,
+                        vy: 0,
+                        size: step * 0.55,
+                        transitX: Math.random(),
+                        transitY: Math.random(),
+                        transitPhase: Math.random() * Math.PI * 2
+                    });
+                }
+                
+                // Update sizes in case step changed on resize
+                particles.forEach(p => p.size = step * 0.55);
+            }
+        }
+        
+        function getActiveHeadingIndex() {
+            let closestHeadingIdx = -1;
+            let minDistance = Infinity;
+            
+            const contentBelow = document.getElementById('content-below');
+            const contentTop = contentBelow ? contentBelow.getBoundingClientRect().top : window.innerHeight;
+            
+            allHeadings.forEach((heading, idx) => {
+                const rect = heading.getBoundingClientRect();
+                const headingCenter = rect.top + rect.height / 2;
+                
+                // If contentBelow has scrolled up high enough to cover the hero text, ignore the hero text
+                if (idx === 0 && contentTop < headingCenter) {
+                    return; 
+                }
+                
+                const screenCenter = window.innerHeight / 2;
+                const dist = Math.abs(headingCenter - screenCenter);
+                
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closestHeadingIdx = idx;
+                }
+            });
+            
+            // Snap to heading if it is within 40% of the screen height from center
+            if (minDistance > window.innerHeight * 0.4) {
+                return -1; // Split/Transit state
+            }
+            return closestHeadingIdx;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const repelRects = [];
+            repelElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.bottom > 0 && rect.top < window.innerHeight) {
+                    repelRects.push({
+                        left: rect.left - 30,
+                        right: rect.right + 30,
+                        top: rect.top - 30,
+                        bottom: rect.bottom + 30
+                    });
+                }
+            });
+            
+            const activeIdxResolved = getActiveHeadingIndex();
+            // Dynamic color logic: Hero section uses dynamic text color, rest is white
+            if (activeIdxResolved === 0) {
+                const dynamicColor = getComputedStyle(document.documentElement).getPropertyValue('--dynamic-text').trim();
+                ctx.fillStyle = dynamicColor || '#111111';
+            } else {
+                ctx.fillStyle = '#ffffff';
+            }
+            
+            const activeTargets = activeIdxResolved >= 0 ? targetsByHeading[activeIdxResolved] : null;
+            let activeRect = null;
+            if (activeIdxResolved >= 0) {
+                activeRect = allHeadings[activeIdxResolved].getBoundingClientRect();
+            }
+            
+            const time = Date.now() * 0.0003; // Slower wave motion for left/right particles
+            
+            particles.forEach((p, i) => {
+                let targetX, targetY;
+                
+                if (activeTargets && i < activeTargets.length) {
+                    // Form the heading text dynamically based on current live position
+                    const t = activeTargets[i];
+                    targetX = activeRect.left + t.localX;
+                    targetY = activeRect.top + t.localY; 
+                } else {
+                    // Transit state: Float organically in the left/right empty space margins
+                    const isLeft = i % 2 === 0;
+                    
+                    // Spread horizontally in the 10% margins using the particle's fixed random hash
+                    const marginWidth = window.innerWidth * 0.12;
+                    targetX = isLeft ? (p.transitX * marginWidth) : (window.innerWidth - marginWidth + p.transitX * marginWidth);
+                    
+                    // Add a gentle floating wave motion
+                    targetY = (p.transitY * window.innerHeight) + Math.sin(time + p.transitPhase) * 40; 
+                    
+                    // Dodge cards (repel logic)
+                    repelRects.forEach(rect => {
+                        if (targetX > rect.left && targetX < rect.right && targetY > rect.top && targetY < rect.bottom) {
+                            if (isLeft) {
+                                targetX = Math.min(targetX, rect.left);
+                            } else {
+                                targetX = Math.max(targetX, rect.right);
+                            }
+                        }
+                    });
+                }
+                
+                // Repel from mouse
+                let dx = mouse.x - p.x;
+                let dy = mouse.y - p.y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < mouse.radius) {
+                    const force = (mouse.radius - dist) / mouse.radius;
+                    const angle = Math.atan2(dy, dx);
+                    p.vx -= Math.cos(angle) * force * 1.5; // Reduced repel force for smoother feel
+                    p.vy -= Math.sin(angle) * force * 1.5;
+                }
+                
+                // Spring towards target (premium, slow, smooth spring)
+                const isForming = activeTargets && i < activeTargets.length;
+                const springForce = isForming ? 0.003 : 0.001; // Ultra slow and soft
+                p.vx += (targetX - p.x) * springForce;
+                p.vy += (targetY - p.y) * springForce;
+                
+                // Friction (more glide, settles smoothly)
+                p.vx *= 0.92;
+                p.vy *= 0.92;
+                
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        // Wait briefly for layout/fonts to settle before measuring
+        setTimeout(() => {
+            measureHeadings();
+            allHeadings.forEach(h => h.classList.add('hide-text'));
+            canvas.style.opacity = '1';
+            animate();
+        }, 1200);
+        
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            mouse.radius = window.innerWidth * 0.08;
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                measureHeadings();
+            }, 300);
+        });
+    }
+    
+    const globalHeadingCanvas = document.getElementById('global-heading-canvas');
+    if (globalHeadingCanvas) {
+        globalHeadingCanvas.style.opacity = '0';
+        globalHeadingCanvas.style.transition = 'opacity 0.4s ease';
+        initGlobalParticleHeadings();
     }
 });

@@ -31,45 +31,67 @@ body.loading {
     overflow: hidden;
 }
 
+body.loading .logo,
+body.loader-morphing .logo {
+    opacity: 0;
+}
+
 .loading-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
     z-index: 99999;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.6s ease, visibility 0.6s ease;
+    pointer-events: none;
 }
 
-.loading-screen.fade-out {
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    transition: opacity 0.85s ease;
+}
+
+.loading-screen.handoff .loading-overlay {
     opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
 }
 
 .loader-text-wrapper {
     position: relative;
     display: inline-block;
+    z-index: 1;
+    will-change: transform;
+    transform-origin: center center;
 }
 
 .loader-text-outline,
 .loader-text-fill {
     font-family: 'Inter', sans-serif;
     font-size: 8vw;
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: 1.5vw;
     text-transform: uppercase;
+    line-height: 1;
     user-select: none;
 }
 
 /* The dim outline — always visible behind the fill */
 .loader-text-outline {
-    color: transparent;
-    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.35);
+    color: #000;
+    text-shadow: 
+        -2px -2px 0 rgba(255,255,255,0.35),
+         2px -2px 0 rgba(255,255,255,0.35),
+        -2px  2px 0 rgba(255,255,255,0.35),
+         2px  2px 0 rgba(255,255,255,0.35),
+         0px -2px 0 rgba(255,255,255,0.35),
+         0px  2px 0 rgba(255,255,255,0.35),
+        -2px  0px 0 rgba(255,255,255,0.35),
+         2px  0px 0 rgba(255,255,255,0.35);
+    transition: opacity 0.35s ease, letter-spacing 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* The filled text — uses background-clip to color only the text,
@@ -85,6 +107,25 @@ body.loading {
     background-clip: text;
     color: transparent;
     animation: loaderFillUp 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transition: letter-spacing 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loader-text-wrapper.matched .loader-text-outline {
+    opacity: 0;
+    -webkit-text-stroke: 0;
+}
+
+.loader-text-wrapper.matched .loader-text-outline,
+.loader-text-wrapper.matched .loader-text-fill {
+    letter-spacing: -0.025em;
+}
+
+.loader-text-wrapper.matched .loader-text-fill {
+    animation: none;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    color: #fff;
 }
 
 @keyframes loaderFillUp {
@@ -186,9 +227,12 @@ body {
 }
 
 .logo {
+    font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 1.042vw;
-    letter-spacing: -0.026vw;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    line-height: 1;
     color: #fff;
 }
 
@@ -326,6 +370,7 @@ body {
 }
 
 .hero-title {
+    position: relative;
     font-size: 5.417vw;
     font-weight: 700;
     line-height: 0.8;
@@ -333,6 +378,21 @@ body {
     margin-bottom: 1.25vw;
     color: var(--dynamic-text);
     transition: color 0.3s ease;
+}
+
+.hero-title.hide-text .word {
+    color: transparent;
+    transition: color 0.4s ease;
+}
+
+.global-heading-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 100;
 }
 
 .hero-title .line {
@@ -1708,6 +1768,27 @@ body {
     line-height: 1.1;
     margin-bottom: 1.042vw;
     letter-spacing: -0.052vw;
+}
+
+.section-title {
+    font-size: 3.75vw;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1vw;
+    letter-spacing: -0.052vw;
+    color: var(--text-color);
+}
+
+.section-title.hide-text {
+    color: transparent !important;
+    background: none !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+.section-title.hide-text .fly-target {
+    color: transparent !important;
+    background: none !important;
+    -webkit-text-fill-color: transparent !important;
 }
 
 .modal-body {

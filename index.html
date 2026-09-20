@@ -13,7 +13,8 @@
 <body>
     <!-- ====== LOADING SCREEN ====== -->
     <div class="loading-screen" id="loading-screen">
-        <div class="loader-text-wrapper">
+        <div class="loading-overlay"></div>
+        <div class="loader-text-wrapper" id="loader-text">
             <span class="loader-text-outline">GROVIX</span>
             <span class="loader-text-fill">GROVIX</span>
         </div>
@@ -37,6 +38,9 @@
         </button>
     </header>
 
+    <!-- ====== GLOBAL HEADING PARTICLE CANVAS ====== -->
+    <canvas id="global-heading-canvas" class="global-heading-canvas"></canvas>
+
     <!-- ====== HERO VIEWPORT (Fixed, scroll-driven) ====== -->
     <div class="scroll-wrapper" id="hero-viewport">
         <div class="noise-overlay"></div>
@@ -44,7 +48,6 @@
 
         <main class="hero-section">
             <div class="hero-content">
-
                 <h1 class="hero-title">
                     <span class="line"><span class="word">Bold</span> <span class="word">Ideas</span> <span class="word">That</span></span><br>
                     <span class="line"><span class="word">Start</span> <span class="word">With</span> <span class="word">Vision.</span></span>
